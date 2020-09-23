@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
 import NowWhat from './components/NowWhat';
+import ChartDashboard from './components/ChartDashboard';
 
 const store = createStore();
 const theme = createMuiTheme({
@@ -30,8 +31,9 @@ const App = () => (
     <Provider store={store}>
       <Wrapper>
         <Header />
-        <NowWhat />
+        <ChartDashboard />
         <ToastContainer />
+        <NowWhat />
       </Wrapper>
     </Provider>
   </MuiThemeProvider>
