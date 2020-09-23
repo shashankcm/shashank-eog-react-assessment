@@ -43,8 +43,9 @@ const MetricsDropDown = () => {
     setMetrics(listOfMetrics);
   }, [dispatch, data, error]);
 
-  const setSelectedMetrics = selectedMetrics =>
+  const setSelectedMetrics = selectedMetrics => {
     dispatch(metricActions.selectdMetricsData({ metrics: selectedMetrics }));
+  };
 
   if (fetching) return <h1>Loading....</h1>;
 

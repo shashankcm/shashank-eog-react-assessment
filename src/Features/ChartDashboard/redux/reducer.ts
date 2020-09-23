@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type Metric = {
+export type Metric = {
   label: string;
   value: string;
 };
