@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { IState } from '../../../store/index';
-import { Metric } from './reducer';
+import { Metric } from './metricsReducer';
 
 const getMetrics = (state: IState) => state.metrics.metrics;
 const getMetricsMeasurements = (state: IState) => state.measurements.measurements;

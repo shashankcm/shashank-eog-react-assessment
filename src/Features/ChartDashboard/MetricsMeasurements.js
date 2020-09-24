@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
@@ -41,21 +41,34 @@ const MeasurementSubscription = `
 
 const MetricsMeasurements = () => {
   const classes = useStyles();
-  const metrics = useSelector(getSelectedMetrics);
   const dispatch = useDispatch();
+  const metrics = useSelector(getSelectedMetrics);
   const [newMeasurementResponse] = useSubscription({
     query: MeasurementSubscription,
   });
   const { data, error } = newMeasurementResponse;
 
+  const getNewMeasurementData = useCallback(
+    newMeasurement => dispatch(actions.measurementDataReceived(newMeasurement)),
+    [dispatch],
+  );
+
+  const getNewMeasurementApiError = useCallback(
+    apiError => dispatch(actions.measurementErrorReceived({ error: apiError.message })),
+    [dispatch],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+    getNewMeasurementData(data);
+  }, [data, getNewMeasurementData]);
+
   useEffect(() => {
     if (error) {
-      dispatch(actions.measurementErrorReceived({ error: error.message }));
+      getNewMeasurementApiError(error);
       return;
     }
-    if (!data) return;
-    dispatch(actions.measurementDataReceived(data));
-  }, [dispatch, data, error]);
+  }, [error, getNewMeasurementApiError]);
 
   return (
     <div className={classes.chart__metrics}>

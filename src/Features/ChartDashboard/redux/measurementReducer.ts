@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import setMetrics from './utils';
 
-type SingleMetricMeasurement = {
+export type Measurement = {
   at: number;
   metric: string;
   unit: string;
@@ -10,22 +11,30 @@ type SingleMetricMeasurement = {
 export type InitalMeasurementState = {
   measurements: {
     metric: string;
-    measurements: SingleMetricMeasurement[];
+    measurements: Measurement[];
     currentMeasurement: number;
     currentMeasurementUnit: string;
   }[];
 };
 
-export type MeasurementMetric = {
-  newMeasurement: SingleMetricMeasurement;
+export type NewMeasurements = {
+  newMeasurement: Measurement;
 };
 
 export type InitialMeasurementMetrics = {
-  getMultipleMeasurements: SingleMetricMeasurement[];
+  getMultipleMeasurements: Measurement[];
 };
 
 export type ApiErrorAction = {
   error: string;
+};
+
+type InitialMultipleMeasurements = {
+  getMultipleMeasurements: {
+    measurements: Measurement[];
+    metric: string;
+    __typename: string;
+  }[];
 };
 
 const initialState: InitalMeasurementState = {
@@ -69,27 +78,11 @@ const initialState: InitalMeasurementState = {
   ],
 };
 
-const setMetrics = (state: InitalMeasurementState, newMeasurement: SingleMetricMeasurement) => {
-  const updatedState = state.measurements.map(measurement => {
-    if (measurement.metric === newMeasurement.metric) {
-      const newMetricmeasurement = {
-        metric: newMeasurement.metric,
-        measurements: [...measurement.measurements, newMeasurement],
-        currentMeasurement: newMeasurement.value,
-        currentMeasurementUnit: newMeasurement.unit,
-      };
-      return newMetricmeasurement;
-    }
-    return measurement;
-  });
-  return updatedState;
-};
-
 const slice = createSlice({
   name: 'metricsMeasurements',
   initialState,
   reducers: {
-    initialMeasurementDataReceived: (state, action: PayloadAction<any>) => {
+    initialMeasurementDataReceived: (state, action: PayloadAction<InitialMultipleMeasurements>) => {
       const { getMultipleMeasurements } = action.payload;
       const measurements = getMultipleMeasurements.reduce(
         (acc: any, val: { metric: any; measurements: string | any[] }): any => {
@@ -106,11 +99,11 @@ const slice = createSlice({
 
       state.measurements = measurements;
     },
-    measurementDataReceived: (state, action: PayloadAction<MeasurementMetric>) => {
+    measurementDataReceived: (state, action: PayloadAction<NewMeasurements>) => {
       const { newMeasurement } = action.payload;
-      state.measurements = setMetrics(state, newMeasurement);
+      state.measurements = [...setMetrics(state, newMeasurement)];
     },
-    measurementErrorReceived: (state, action: PayloadAction<ApiErrorAction>) => state,
+    measurementApiErrorReceived: (state, action: PayloadAction<ApiErrorAction>) => state,
   },
 });
 

@@ -4,7 +4,7 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { Provider, createClient, useQuery } from 'urql';
 
-import { actions as metricActions } from './redux/reducer';
+import { actions as metricActions } from './redux/metricsReducer';
 
 const animatedComponents = makeAnimated();
 
