@@ -7,7 +7,7 @@ const getMetricsMeasurements = (state: IState) => state.measurements.measurement
 
 export const getSelectedMetrics = createSelector(
   [(state: IState) => getMetrics(state)],
-  (metrics: Metric[]) => metrics,
+  (metrics: Metric[]) => metrics || [],
 );
 
 export const getCurrentCurrentValueForSelectedMeteric = (selectedMetric: string) =>
@@ -23,3 +23,23 @@ export const getCurrentCurrentValueForSelectedMeteric = (selectedMetric: string)
       return SlectedMetricValues[0];
     },
   );
+
+export const generateChartData = createSelector(
+  [(state: IState) => getMetricsMeasurements(state), (state: IState) => getMetrics(state)],
+  (measurements, selectedMetrics) => {
+    const chartData = Object.values(
+      measurements
+        .flatMap(measurement => measurement.measurements)
+        .reduce((acc: any, measurement): any => {
+          acc[measurement.at] = {
+            ...acc[measurement.at],
+            [measurement.metric]: measurement.value,
+            time: measurement.at,
+          };
+          return acc;
+        }, {}),
+    );
+
+    return { chartData, measurements, selectedMetrics };
+  },
+);

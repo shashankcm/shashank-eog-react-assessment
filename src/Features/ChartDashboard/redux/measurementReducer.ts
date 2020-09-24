@@ -20,6 +20,10 @@ export type MeasurementMetric = {
   newMeasurement: SingleMetricMeasurement;
 };
 
+export type InitialMeasurementMetrics = {
+  getMultipleMeasurements: SingleMetricMeasurement[];
+};
+
 export type ApiErrorAction = {
   error: string;
 };
@@ -85,6 +89,23 @@ const slice = createSlice({
   name: 'metricsMeasurements',
   initialState,
   reducers: {
+    initialMeasurementDataReceived: (state, action: PayloadAction<any>) => {
+      const { getMultipleMeasurements } = action.payload;
+      const measurements = getMultipleMeasurements.reduce(
+        (acc: any, val: { metric: any; measurements: string | any[] }): any => {
+          const measurement = {
+            metric: val.metric,
+            measurements: val.measurements,
+            currentMeasurement: val.measurements[val.measurements.length - 1].value,
+            currentMeasurementUnit: val.measurements[0].unit,
+          };
+          return [...acc, measurement];
+        },
+        [],
+      );
+
+      state.measurements = measurements;
+    },
     measurementDataReceived: (state, action: PayloadAction<MeasurementMetric>) => {
       const { newMeasurement } = action.payload;
       state.measurements = setMetrics(state, newMeasurement);
